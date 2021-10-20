@@ -23,6 +23,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        \Event::listen('Illuminate\Database\Events\QueryExecuted', function ($query) {
+            \Log::debug($query->sql);
+            \Log::debug($query->bindings);
+            \Log::debug($query->time);
+        });
     }
 }

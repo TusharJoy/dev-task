@@ -73,6 +73,8 @@
             var oTable = $("#" + id).DataTable({
                 processing: true,
                 serverSide: true,
+                searching: false,
+                ordering:false,
                 pageLength: 20,
                 lengthMenu: [20, 50, 100, 200, 500],
                 "scrollX": true,

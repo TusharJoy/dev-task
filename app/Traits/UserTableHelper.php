@@ -3,6 +3,7 @@
 namespace App\Traits;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 trait UserTableHelper
 {
@@ -11,11 +12,31 @@ trait UserTableHelper
         $day = $request->get('day');
         $year = $request->get('year');
 
-        if (!empty($day)) {
-            $builder->whereDay('birthday', $day);
+        $keyword = $day . $year;
+        if (!empty($keyword)) {
+            \Log::emergency("I am called with cache");
+            return Cache::remember($keyword, 60, function () use ($builder, $day, $year, $keyword) {
+                Cache::flush();
+                return $this->getQueryResult($builder, [
+                    'day' => $day,
+                    'year' => $year
+                ])->get();
+            });
         }
-        if (!empty($year)) {
-            $builder->whereYear('birthday', $year);
+        \Log::emergency("Cache without i am called");
+        return $this->getQueryResult($builder, [
+            'day' => $day,
+            'year' => $year
+        ]);
+    }
+
+    private function getQueryResult($builder, array $properties)
+    {
+        if (!empty($properties['day'])) {
+            $builder->whereDay('birthday', $properties['day']);
+        }
+        if (!empty($properties['year'])) {
+            $builder->whereYear('birthday', $properties['year']);
         }
         return $builder;
     }
