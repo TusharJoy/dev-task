@@ -14,7 +14,6 @@ trait UserTableHelper
 
         $keyword = $day . $year;
         if (!empty($keyword)) {
-            \Log::emergency("I am called with cache");
             return Cache::remember($keyword, 60, function () use ($builder, $day, $year, $keyword) {
                 Cache::flush();
                 return $this->getQueryResult($builder, [
@@ -23,7 +22,6 @@ trait UserTableHelper
                 ])->get();
             });
         }
-        \Log::emergency("Cache without i am called");
         return $this->getQueryResult($builder, [
             'day' => $day,
             'year' => $year
